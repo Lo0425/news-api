@@ -48,7 +48,7 @@ function App() {
     "in",
   ];
 
-  const showNews = news.length ? (
+  const showNews = news ? (
     news.map((article, i) => <Article data={article} key={i} />)
   ) : (
     <p>No news to show</p>
