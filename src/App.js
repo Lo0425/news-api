@@ -3,7 +3,7 @@ import Article from "./components/Article";
 function App() {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [countryValues, setCountryValues] = useState("cn");
+  const [countryValues, setCountryValues] = useState("my");
   const [categoryValues, setCategoryValues] = useState("business");
 
   console.log(countryValues);
