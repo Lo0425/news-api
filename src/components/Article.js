@@ -1,14 +1,21 @@
 import React from "react";
 import moment from "moment";
 
-const Article = ({ data }) => {
+const Article = ({ posts, loading }) => {
+  if (loading) {
+    return <h2>Loading...</h2>;
+  }
   return (
     <div>
-      <img src={data.urlToImage} alt={data.title} />
-      <h2>{data.title}</h2>
-      <p>{data.description}</p>
-      <small>{data.author}</small>
-      <small>{moment(data.publishedAt).format("LLLL")}</small>
+      {posts.map((post) => (
+        <>
+          <img src={post.urlToImage} alt={post.title} />
+          <h2>{post.title}</h2>
+          <p>{post.description}</p>
+          <small>{post.author}</small>
+          <small>{moment(post.publishedAt).format("LLLL")}</small>
+        </>
+      ))}
     </div>
   );
 };

@@ -1,18 +1,28 @@
 import React, { useState, useEffect } from "react";
+import ReactPaginate from "react-paginate";
 import Article from "./components/Article";
+import Pagination from "./components/Pagination";
+
 function App() {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [countryValues, setCountryValues] = useState("my");
   const [categoryValues, setCategoryValues] = useState("business");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
-  console.log(countryValues);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage, setPostsPerPage] = useState(3);
+
   const getNews = async (country, category) => {
     setLoading(true);
     if (!country) country = countryValues;
     if (!category) category = categoryValues;
+    let start = fromDate;
+    let end = toDate;
+
     let res = await fetch(
-      `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${process.env.REACT_APP_API_KEY}`
+      `https://newsapi.org/v2/top-headlines?from=${start}&to=${end}&country=${country}&category=${category}&sortBy=popularity&apiKey=${process.env.REACT_APP_API_KEY}`
     );
     let data = await res.json();
     setNews(data.articles);
@@ -22,6 +32,8 @@ function App() {
   useEffect(() => {
     getNews();
   }, []);
+
+  console.log(news);
 
   const categories = [
     "general",
@@ -48,15 +60,19 @@ function App() {
     "in",
   ];
 
-  const showNews = news ? (
-    news.map((article, i) => <Article data={article} key={i} />)
-  ) : (
-    <p>No news to show</p>
-  );
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = news.slice(indexOfFirstPost, indexOfLastPost);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const onClickHandler = (e) => {
     getNews();
   };
+
+  // const handlePageClick = (data) => {
+  //   console.log(data.selected);
+  // };
 
   return (
     <>
@@ -95,9 +111,25 @@ function App() {
                 </option>
               ))}
             </select>
+
+            <div>
+              <label>From:</label>
+              <input
+                type="date"
+                onChange={(e) => setFromDate(e.target.value)}
+              />
+
+              <label>To:</label>
+              <input type="date" onChange={(e) => setToDate(e.target.value)} />
+            </div>
             <button onClick={onClickHandler}>Search</button>
           </div>
-          {showNews}
+          <Article posts={currentPosts} loading={loading} />
+          <Pagination
+            postsPerPage={postsPerPage}
+            totalPosts={news.length}
+            paginate={paginate}
+          />
         </>
       )}
     </>
